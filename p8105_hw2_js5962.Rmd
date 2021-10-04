@@ -8,6 +8,7 @@ output: github_document
 library(tidyverse)
 library(readxl)
 library(dplyr)
+library(lubridate)
 ```
 
 ## Problem 1
@@ -83,12 +84,13 @@ show(Precipation_2018_2019)
 
 ## Problem 2
 
-**a)** Solve Data in pols-month.csv
+**a)** Clean the data in pols-month.csv
 
 ```{r 2a}
 Pols_month_clean = read_csv(
   "./pols-month.csv") %>%
   janitor::clean_names() %>% 
+  drop_na() %>%
   ## use separate to break up
   separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
 
@@ -109,10 +111,89 @@ Pols_month_clean = read_csv(
 view(Pols_month_clean)
 ```
 
-**b)**  Solve Data in snp.csv
+**b)**  Clean the data in snp.csv
 
-```{r}
+```{r 2b}
+snp_clean = read_csv(
+  "./snp.csv") %>%
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(date = mdy(as.character(date))) %>% 
+  
+  ## use separate to break up
+  separate(date, into = c("year", "month", "day")) %>% 
 
+  ## change characters to integers
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day),
+  ) %>%
+  ## arrange and organize 
+  select(year, month, close) %>%
+  arrange(year, month) %>% 
+  relocate(year, month) %>%
+    ## replace month number with month name
+  mutate(
+    month = month.name[month]
+  ) %>%
+view(snp_clean)
+```
+
+s <- spec(snp_clean)
+s
+cols(
+  close = col_double()
+) 
+cols(
+  .default = col_double()
+  )
+
+
+**c)**  Tidy the unemployment data
+
+```{r 2c}
+unemployment_data = read_csv(
+  "./unemployment.csv") %>%
+  janitor::clean_names() %>% 
+  drop_na()
+
+  ## switching from “wide” to “long” format
+unemployment_clean = 
+  pivot_longer(
+    unemployment_data,
+    jan:dec,
+    names_to = "month",
+    values_to = "percentage"
+) %>% 
+  mutate(
+    month = recode(month, "jan" = "January", 
+                   "feb" = "February", 
+                   "mar" = "March", 
+                   "apr" = "April", 
+                   "may" = "May", 
+                   "jun" = "June", 
+                   "jul" = "July", 
+                   "aug" = "August", 
+                   "sep" = "September", 
+                   "oct" = "October", 
+                   "nov" = "November", 
+                   "dec" = "December"))
+view(unemployment_clean)
+```
+
+**d)** Join the data sets 
+
+```{r 2d}
+snp_pols = 
+  left_join(Pols_month_clean, snp_clean, by = c("year" = "year", "month" = "month")) %>% 
+view
+FiveThirtyEight_data = 
+  left_join(snp_pols, unemployment_clean, by = c("year" = "year", "month" = "month")) %>% 
+view
 ```
 
 
+**Explain**
+
+**Problem 3**
