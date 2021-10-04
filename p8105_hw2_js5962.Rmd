@@ -1,29 +1,118 @@
 ---
 title: "p8105_hw2_js5962"
 author: Jiayao Sun
-output: git_document
+output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup}
+library(tidyverse)
+library(readxl)
+library(dplyr)
 ```
 
-## R Markdown
+## Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+**a)** Read and clean the Mr. Trash Wheel sheet
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r 1a}
+# Read data file
+Trash_wheel_read = read_excel(
+  "./Trash-Wheel-Collection-Totals.xlsx",
+  sheet = "Mr. Trash Wheel",
+  range = "A2:N408"
+)
 
-```{r cars}
-summary(cars)
+# specify the sheet in the Excel file and to omit non-data entries
+# use reasonable variable names
+# omit rows that do not include dumpster-specific data
+# round the number of sports balls to the nearest integer
+clean_version = 
+  janitor::clean_names(Trash_wheel_read) %>%
+  drop_na(dumpster) %>%
+   mutate(
+    sports_balls = round(sports_balls),
+    sports_balls = as.integer(sports_balls)
+  ) %>%
+View
 ```
 
-## Including Plots
+**b)** Read and clean precipitation data for 2018 and 2019. For each, omit rows without precipitation data and add a variable for year. 
 
-You can also embed plots, for example:
+```{r 1b}
+# Read and clean precipitation data for 2018
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Precipitation_2018 = read_excel(
+  "./Trash-Wheel-Collection-Totals.xlsx",
+  sheet = "2018 Precipitation",
+  skip = 1
+)
+
+clean_2018 = 
+  janitor::clean_names(Precipitation_2018) %>%
+  drop_na(month, total) %>%
+  mutate(year = 2018)
+view(clean_2018)
+
+# Read and clean precipitation data for 2019
+
+Precipitation_2019 = read_excel(
+  "./Trash-Wheel-Collection-Totals.xlsx",
+  sheet = "2019 Precipitation",
+  skip = 1
+)
+
+clean_2019 =
+  janitor::clean_names(Precipitation_2019) %>%
+  drop_na(month, total) %>%
+  mutate(year = 2019)
+view(clean_2019)
+
+# combine precipitation datasets
+Precipation_2018_2019 = 
+  bind_rows(clean_2018, clean_2019) %>%
+  mutate(month = month.name[month])
+view(Precipation_2018_2019)
+show(Precipation_2018_2019)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+**c)** Write a paragraph about these data
+
+```{r}
+
+```
+
+## Problem 2
+
+**a)** Solve Data in pols-month.csv
+
+```{r 2a}
+Pols_month_clean = read_csv(
+  "./pols-month.csv") %>%
+  janitor::clean_names() %>% 
+  ## use separate to break up
+  separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
+
+  ## change characters to integers
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day),
+    ## replace month number with month name
+    month = month.name[month]
+  ) %>%
+  ## create a president variable 
+  mutate(
+    president = recode(prez_dem, "0" = "gop", "1" = "dem")
+  ) %>%
+  ## remove prez_dem, prez_gop, day
+  select(-prez_dem, -prez_gop, -day)
+view(Pols_month_clean)
+```
+
+**b)**  Solve Data in snp.csv
+
+```{r}
+
+```
+
+
