@@ -226,3 +226,58 @@ This dataset combines the former three data on the scale of year and month. It s
 
 
 **Problem 3**
+
+**a)** Load and tidy the data
+
+```{r 3a}
+PBN_clean = read.csv(
+  "./Popular_Baby_Names.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  drop_na() %>%
+  mutate(
+    child_s_first_name = toupper(child_s_first_name),
+    ethnicity = gsub("BLACK NON HISP$", "BLACK NON HISPANIC", pull(.,ethnicity)),
+    ethnicity = gsub("WHITE NON HISP$", "WHITE NON HISPANIC", pull(.,ethnicity)),
+    ethnicity = gsub("ASIAN NON HISP$", "ASIAN NON HISPANIC", pull(.,ethnicity)),
+  ) %>%
+  distinct()
+view(PBN_clean)
+```
+
+**b)**  “Olivia”
+
+```{r 3b_1, message = FALSE}
+Olivia_df = PBN_clean %>%
+  filter(child_s_first_name == "OLIVIA", gender == "FEMALE") %>%
+  select(-child_s_first_name, -count) %>%
+  arrange(year_of_birth) %>%
+  knitr::kable()
+Olivia_df
+```
+ 
+ 
+The most popular male name
+
+```{r 3b_2, message = FALSE}
+Male_MPN = PBN_clean %>%
+  filter(gender == "MALE", rank == "1") %>%
+  select(-count) %>%
+  arrange(year_of_birth) %>%
+  knitr::kable()
+Male_MPN
+```
+
+**c)** scatter plot for male, white non-hispanic children born in 2016
+
+```{r 3c}
+Male_WNH_2016 = 
+  filter(PBN_clean,
+         gender == "MALE",
+         ethnicity ==  "WHITE NON HISPANIC",
+         year_of_birth == "2016")
+
+Male_WNH_2016_plot = ggplot(Male_WNH_2016, aes(x = rank, y = count)) + geom_point()
+Male_WNH_2016_plot
+
+```
