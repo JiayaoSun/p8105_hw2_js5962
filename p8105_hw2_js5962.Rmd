@@ -33,8 +33,8 @@ clean_version =
    mutate(
     sports_balls = round(sports_balls),
     sports_balls = as.integer(sports_balls)
-  ) %>%
-View
+  )
+view(clean_version)
 ```
 
 **b)** Read and clean precipitation data for 2018 and 2019. For each, omit rows without precipitation data and add a variable for year. 
@@ -76,11 +76,32 @@ view(Precipation_2018_2019)
 show(Precipation_2018_2019)
 ```
 
-**c)** Write a paragraph about these data
+**c)** Write a paragraph about the data
 
-```{r}
 
-```
+By cleaning the trash wheel data set, we get the tidy trash wheel data containing `r nrow(clean_version)` rows and `r ncol(clean_version)` columns. 
+
+To be specific, 
+
+date = day collecting trash;
+
+sports_ball = the number of sports balls that was collected by certain dumpster on the given date rounded to the nearest integer;
+
+weight_tons = the weight of trash (in tons) that was collected by certain dumpster on the given date;
+
+By cleaning and combining the precipitation data set, we get the precipation data sets of 2018 and 2019 contains `r nrow(Precipation_2018_2019)` rows and `r ncol(Precipation_2018_2019)` columns.
+
+To be specific
+
+Month = month measurement for precipitation;
+
+Total = total precipitation in a given month in certain year;
+
+Year = year measurement for precipitation;
+
+*The median number of sports balls in the dumpster in 2019 is `r clean_version %>% filter(year == c("2019")) %>% pull(sports_balls) %>% median()`.*
+
+*The total precipitation measured in 2018 is `r sum(Precipation_2018_2019 %>% filter(year == 2018) %>% select(total))`.*
 
 ## Problem 2
 
@@ -136,18 +157,9 @@ snp_clean = read_csv(
     ## replace month number with month name
   mutate(
     month = month.name[month]
-  ) %>%
+  )
 view(snp_clean)
 ```
-
-s <- spec(snp_clean)
-s
-cols(
-  close = col_double()
-) 
-cols(
-  .default = col_double()
-  )
 
 
 **c)**  Tidy the unemployment data
@@ -182,7 +194,7 @@ unemployment_clean =
 view(unemployment_clean)
 ```
 
-**d)** Join the data sets 
+**d)** Join the datasets 
 
 ```{r 2d}
 snp_pols = 
@@ -193,7 +205,24 @@ FiveThirtyEight_data =
 view
 ```
 
-
 **Explain**
+
+_pols-month data :_
+
+The data set describes the political distribution in the United State seperately in each year from 1947 to 2015 with 822 rows and 9 columns after cleaning. Variable President means whether the president is Republican or Democratic.
+
+_snp data :_
+
+The snp data set represents the closing values of the S&P stock index on the associated date from 1969 to 2068 with 787 rows and 2 columns. Year means the yaer of observation. Month means the month of observation. close means the closing calue.
+
+_unemployment data :_
+
+The unemployment data contains the unemployment rate in each month from 1948 to 2014 with 804 rows and 3 columns after changed to cleaned version. Year means the yaer of observation. Month means the month of observation. Percentage means unemployment rate.
+
+_Five Thirty Eight data combined :_
+
+This dataset combines the former three data on the scale of year and month. It shows data in economics(stock and unemployment rate) and politics(political distribution) in one sheet with 822 rows and 11 columns from 1947 to 2015.
+
+
 
 **Problem 3**
