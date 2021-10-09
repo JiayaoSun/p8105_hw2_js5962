@@ -18,7 +18,7 @@ library(lubridate)
 ```{r 1a}
 # Read data file
 Trash_wheel_read = read_excel(
-  "./Trash-Wheel-Collection-Totals.xlsx",
+  "./Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
   sheet = "Mr. Trash Wheel",
   range = "A2:N408"
 )
@@ -43,7 +43,7 @@ view(clean_version)
 # Read and clean precipitation data for 2018
 
 Precipitation_2018 = read_excel(
-  "./Trash-Wheel-Collection-Totals.xlsx",
+  "./Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
   sheet = "2018 Precipitation",
   skip = 1
 )
@@ -57,7 +57,7 @@ view(clean_2018)
 # Read and clean precipitation data for 2019
 
 Precipitation_2019 = read_excel(
-  "./Trash-Wheel-Collection-Totals.xlsx",
+  "./Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
   sheet = "2019 Precipitation",
   skip = 1
 )
